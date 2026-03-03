@@ -165,93 +165,108 @@ impl HomeView {
             .icon(Icon::default().path("icons/shield.svg"))
             .child(if let Some(fido) = &state.fido_info {
                 v_flex()
-                    .gap_6()
+                    .gap_3()
+                    .text_sm()
+                    // AAGUID
                     .child(
-                        div()
-                            .grid()
-                            .grid_cols(2)
-                            .gap_4()
-                            .child(Self::render_kv(
-                                "FIDO Version",
-                                fido.versions.first().cloned().unwrap_or("N/A".into()),
-                                theme,
-                                false,
-                            ))
-                            .child(Self::render_kv(
-                                "PIN Set",
-                                if fido.options.get("clientPin").copied().unwrap_or(false) {
-                                    "Yes"
+                        h_flex()
+                            .justify_between()
+                            .items_center()
+                            .flex_wrap()
+                            .gap_1()
+                            .child(div().text_color(theme.muted_foreground).child("AAGUID"))
+                            .child(
+                                div()
+                                    .font_family("Mono")
+                                    .text_color(theme.foreground)
+                                    .child(fido.aaguid.clone()),
+                            ),
+                    )
+                    // FIDO Versions
+                    .child(
+                        h_flex()
+                            .justify_between()
+                            .items_center()
+                            .flex_wrap()
+                            .gap_1()
+                            .child(
+                                div()
+                                    .text_color(theme.muted_foreground)
+                                    .child("FIDO Versions"),
+                            )
+                            .child(div().text_color(theme.foreground).child(
+                                if fido.versions.is_empty() {
+                                    "N/A".to_string()
                                 } else {
-                                    "No"
+                                    fido.versions.join(" · ")
                                 },
-                                theme,
-                                false,
-                            ))
-                            .child(Self::render_kv(
-                                "Min PIN Length",
-                                fido.min_pin_length.to_string(),
-                                theme,
-                                false,
-                            ))
-                            .child(Self::render_kv(
-                                "Resident Keys",
-                                if fido.options.get("rk").copied().unwrap_or(false) {
-                                    "Supported"
-                                } else {
-                                    "Not Supported"
-                                },
-                                theme,
-                                false,
-                            ))
-                            .when(fido.remaining_discoverable_credentials.is_some(), |this| {
-                                this.child(Self::render_kv(
-                                    "Remaining Credentials",
-                                    fido.remaining_discoverable_credentials
-                                        .unwrap_or(0)
-                                        .to_string(),
-                                    theme,
-                                    false,
-                                ))
-                            }),
+                            )),
                     )
                     .child(div().h_px().bg(theme.border))
-                    .child(Self::render_kv("AAGUID", fido.aaguid.clone(), theme, true))
-                    // .when(!fido.vendor_config_commands.is_empty(), |this| {
-                    //     this.child(div().h_px().bg(theme.border)).child(
-                    //         v_flex()
-                    //             .gap_2()
-                    //             .child(
-                    //                 div()
-                    //                     .text_sm()
-                    //                     .text_color(theme.muted_foreground)
-                    //                     .child("Vendor Config Commands"),
-                    //             )
-                    //             .child(
-                    //                 h_flex().gap_2().flex_wrap().children(
-                    //                     fido.vendor_config_commands
-                    //                         .iter()
-                    //                         .map(|cmd| Tag::new(cmd.clone()).active(true)),
-                    //                 ),
-                    //             ),
-                    //     )
-                    // })
-                    // .when(!fido.certifications.is_empty(), |this| {
-                    //     this.child(div().h_px().bg(theme.border)).child(
-                    //         v_flex()
-                    //             .gap_2()
-                    //             .child(
-                    //                 div()
-                    //                     .text_sm()
-                    //                     .text_color(theme.muted_foreground)
-                    //                     .child("Certifications"),
-                    //             )
-                    //             .child(h_flex().gap_2().flex_wrap().children(
-                    //                 fido.certifications.iter().map(|(name, _enabled)| {
-                    //                     Tag::new(name.clone()).active(true)
-                    //                 }),
-                    //             )),
-                    //     )
-                    // })
+                    // PIN Set
+                    .child(
+                        h_flex()
+                            .justify_between()
+                            .items_center()
+                            .child(div().text_color(theme.muted_foreground).child("PIN Set"))
+                            .child({
+                                let pin_set =
+                                    fido.options.get("clientPin").copied().unwrap_or(false);
+                                Tag::new(if pin_set { "Set" } else { "Not Set" }).active(pin_set)
+                            }),
+                    )
+                    // Resident Keys
+                    .child(
+                        h_flex()
+                            .justify_between()
+                            .items_center()
+                            .child(
+                                div()
+                                    .text_color(theme.muted_foreground)
+                                    .child("Resident Keys"),
+                            )
+                            .child({
+                                let rk = fido.options.get("rk").copied().unwrap_or(false);
+                                Tag::new(if rk { "Supported" } else { "Not Supported" }).active(rk)
+                            }),
+                    )
+                    // Min PIN Length
+                    .child(
+                        h_flex()
+                            .justify_between()
+                            .items_center()
+                            .child(
+                                div()
+                                    .text_color(theme.muted_foreground)
+                                    .child("Min PIN Length"),
+                            )
+                            .child(
+                                div()
+                                    .font_medium()
+                                    .text_color(theme.foreground)
+                                    .child(fido.min_pin_length.to_string()),
+                            ),
+                    )
+                    // Remaining Credentials
+                    .when(fido.remaining_discoverable_credentials.is_some(), |this| {
+                        this.child(
+                            h_flex()
+                                .justify_between()
+                                .items_center()
+                                .child(
+                                    div()
+                                        .text_color(theme.muted_foreground)
+                                        .child("Remaining Credentials"),
+                                )
+                                .child(
+                                    div().font_medium().text_color(theme.foreground).child(
+                                        fido.remaining_discoverable_credentials
+                                            .unwrap_or(0)
+                                            .to_string(),
+                                    ),
+                                ),
+                        )
+                    })
                     .into_any_element()
             } else {
                 div()
