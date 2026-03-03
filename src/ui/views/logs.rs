@@ -76,6 +76,7 @@ impl Render for LogsView {
             v_flex()
                 .gap_4()
                 .h_full()
+                .w_full()
                 .child(
                     div()
                         .flex_1()
