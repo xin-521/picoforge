@@ -7,6 +7,12 @@ use gpui_component::{
     v_flex,
 };
 
+type PinPromptCallback = std::rc::Rc<dyn Fn(String, WeakEntity<PinPromptContent>, &mut App)>;
+type ConfirmCallback = std::rc::Rc<dyn Fn(WeakEntity<ConfirmContent>, &mut App)>;
+type ChangePinCallback =
+    std::rc::Rc<dyn Fn(String, String, WeakEntity<ChangePinContent>, &mut App)>;
+type SetPinCallback = std::rc::Rc<dyn Fn(String, WeakEntity<SetPinContent>, &mut App)>;
+
 #[derive(Clone)]
 enum DialogPhase {
     Input,
@@ -21,7 +27,7 @@ pub struct PinPromptContent {
     description: SharedString,
     confirm_label: SharedString,
     pin_input: Entity<InputState>,
-    on_confirm: std::rc::Rc<dyn Fn(String, WeakEntity<PinPromptContent>, &mut App)>,
+    on_confirm: PinPromptCallback,
     _subscription: Subscription,
 }
 
@@ -117,10 +123,10 @@ impl Render for PinPromptContent {
                             .px_3()
                             .py_2()
                             .rounded_md()
-                            .bg(cx.theme().danger.opacity(0.1))
-                            .text_color(cx.theme().danger)
+                            .bg(rgb(0x18181b))
+                            .text_color(rgb(0xef4444))
                             .text_sm()
-                            .child(err_msg.clone()),
+                            .child(render_error_message(err_msg.clone())),
                     )
                     .child(Input::new(&pin_input))
                     .child(
@@ -244,7 +250,7 @@ pub struct ConfirmContent {
     message: String,
     ok_label: SharedString,
     ok_variant: ButtonVariant,
-    on_ok: std::rc::Rc<dyn Fn(WeakEntity<ConfirmContent>, &mut App)>,
+    on_ok: ConfirmCallback,
 }
 
 impl ConfirmContent {
@@ -326,10 +332,10 @@ impl Render for ConfirmContent {
                             .px_3()
                             .py_2()
                             .rounded_md()
-                            .bg(cx.theme().danger.opacity(0.1))
-                            .text_color(cx.theme().danger)
+                            .bg(rgb(0x18181b))
+                            .text_color(rgb(0xef4444))
                             .text_sm()
-                            .child(err_msg.clone()),
+                            .child(render_error_message(err_msg.clone())),
                     )
                     .child(
                         h_flex()
@@ -426,7 +432,7 @@ pub struct ChangePinContent {
     current_pin: Entity<InputState>,
     new_pin: Entity<InputState>,
     confirm_pin: Entity<InputState>,
-    on_confirm: std::rc::Rc<dyn Fn(String, String, WeakEntity<ChangePinContent>, &mut App)>,
+    on_confirm: ChangePinCallback,
     _subscriptions: Vec<Subscription>,
 }
 
@@ -548,10 +554,10 @@ impl Render for ChangePinContent {
                             .px_3()
                             .py_2()
                             .rounded_md()
-                            .bg(cx.theme().danger.opacity(0.1))
-                            .text_color(cx.theme().danger)
+                            .bg(rgb(0x18181b))
+                            .text_color(rgb(0xef4444))
                             .text_sm()
-                            .child(err_msg.clone()),
+                            .child(render_error_message(err_msg.clone())),
                     )
                     .child(
                         v_flex()
@@ -742,7 +748,7 @@ pub struct SetPinContent {
     phase: DialogPhase,
     new_pin: Entity<InputState>,
     confirm_pin: Entity<InputState>,
-    on_confirm: std::rc::Rc<dyn Fn(String, WeakEntity<SetPinContent>, &mut App)>,
+    on_confirm: SetPinCallback,
     _subscriptions: Vec<Subscription>,
 }
 
@@ -856,10 +862,10 @@ impl Render for SetPinContent {
                             .px_3()
                             .py_2()
                             .rounded_md()
-                            .bg(cx.theme().danger.opacity(0.1))
-                            .text_color(cx.theme().danger)
+                            .bg(rgb(0x18181b))
+                            .text_color(rgb(0xef4444))
                             .text_sm()
-                            .child(err_msg.clone()),
+                            .child(render_error_message(err_msg.clone())),
                     )
                     .child(
                         v_flex()
@@ -1091,10 +1097,10 @@ impl Render for StatusContent {
                             .px_3()
                             .py_2()
                             .rounded_md()
-                            .bg(cx.theme().danger.opacity(0.1))
-                            .text_color(cx.theme().danger)
+                            .bg(rgb(0x18181b))
+                            .text_color(rgb(0xef4444))
                             .text_sm()
-                            .child(err_msg.clone()),
+                            .child(render_error_message(err_msg.clone())),
                     )
                     .child(
                         h_flex()
@@ -1147,4 +1153,31 @@ pub fn open_status_dialog(
     });
 
     handle
+}
+
+fn render_error_message(msg: String) -> impl IntoElement {
+    let troubleshooting_phrase = "troubleshooting guide";
+    let url = "https://github.com/librekeys/picoforge/wiki/Troubleshooting#1-my-key-is-not-detected-by-picoforge-or-picoforge-displays-a-device-status-of-online---fido-and-there-are-some-settings-that-i-cannot-configure";
+
+    if msg.contains(troubleshooting_phrase) {
+        v_flex()
+            .child("The device firmware does not support being configured in fido only communication mode.")
+            .child(
+                h_flex()
+                    .gap_1()
+                    .child("Have a look at the")
+                    .child(
+                        div()
+                            .text_color(rgb(0x3b82f6))
+                            .cursor_pointer()
+                            .on_mouse_down(MouseButton::Left, move |_, _, cx| {
+                                cx.open_url(url);
+                            })
+                            .child(troubleshooting_phrase.to_string()),
+                    )
+                    .child("to fix this"),
+            )
+    } else {
+        div().child(msg)
+    }
 }

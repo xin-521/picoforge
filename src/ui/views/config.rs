@@ -228,11 +228,12 @@ impl ConfigView {
         cx.notify();
 
         let entity = cx.entity().downgrade();
+        let method_clone = method.clone();
 
         self._task = Some(cx.spawn(async move |_, cx| {
             let result = cx
                 .background_executor()
-                .spawn(async move { io::write_config(changes, method, pin) })
+                .spawn(async move { io::write_config(changes, method_clone, pin) })
                 .await;
 
             let new_status_result = if result.is_ok() {
@@ -289,15 +290,25 @@ impl ConfigView {
                     }
                     Err(e) => {
                         log::error!("Error saving config: {}", e);
+
+                        let mut err_msg = format!("Failed to apply configuration: {}", e);
+
+                        // Special case for FIDO 0x3E error (Invalid Subcommand)
+                        // This happens when the firmware is too old to support config over FIDO
+                        if method == crate::device::types::DeviceMethod::Fido && err_msg.contains("0x3E")
+                        {
+                            err_msg = "The device firmware does not support being configured in fido only communication mode. \nHave a look at the troubleshooting guide to fix this".to_string();
+                        }
+
                         match &dialog_handle {
                             StatusDialogHandle::Pin(dh) => {
                                 let _ = dh.update(cx, |d, cx| {
-                                    d.set_error(format!("Failed to apply: {}", e), cx);
+                                    d.set_error(err_msg, cx);
                                 });
                             }
                             StatusDialogHandle::Status(dh) => {
                                 let _ = dh.update(cx, |d, cx| {
-                                    d.set_error(format!("Failed to apply: {}", e), cx);
+                                    d.set_error(err_msg, cx);
                                 });
                             }
                         }
@@ -375,19 +386,19 @@ impl ConfigView {
         }
 
         let led_gpio_str = self.led_gpio_input.read(cx).text().to_string();
-        if let Ok(val) = led_gpio_str.parse::<u8>() {
-            if val != current_config.led_gpio {
-                changes.led_gpio = Some(val);
-            }
+        if let Ok(val) = led_gpio_str.parse::<u8>()
+            && val != current_config.led_gpio
+        {
+            changes.led_gpio = Some(val);
         }
 
         let driver_idx = self.led_driver_select.read(cx).selected_index(cx);
-        if let Some(idx) = driver_idx {
-            if let Some(driver) = LedDriverType::all().get(idx.row) {
-                let val = driver.value();
-                if Some(val) != current_config.led_driver {
-                    changes.led_driver = Some(val);
-                }
+        if let Some(idx) = driver_idx
+            && let Some(driver) = LedDriverType::all().get(idx.row)
+        {
+            let val = driver.value();
+            if Some(val) != current_config.led_driver {
+                changes.led_driver = Some(val);
             }
         }
 
@@ -397,10 +408,10 @@ impl ConfigView {
         }
 
         let touch_timeout_str = self.touch_timeout_input.read(cx).text().to_string();
-        if let Ok(val) = touch_timeout_str.parse::<u8>() {
-            if val != current_config.touch_timeout {
-                changes.touch_timeout = Some(val);
-            }
+        if let Ok(val) = touch_timeout_str.parse::<u8>()
+            && val != current_config.touch_timeout
+        {
+            changes.touch_timeout = Some(val);
         }
 
         if (self.led_dimmable != current_config.led_dimmable)
@@ -778,7 +789,7 @@ impl Render for ConfigView {
                             })),
                     ),
                 ),
-            &theme,
+            theme,
         )
         .into_any_element()
     }

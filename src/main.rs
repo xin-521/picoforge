@@ -63,7 +63,6 @@ fn main() {
                 titlebar: Some(TitlebarOptions {
                     title: Some("PicoForge".into()),
                     appears_transparent: true,
-                    // TODO: This option needs to be tested and adjusted on macos
                     traffic_light_position: Some(gpui::point(px(9.0), px(9.0))),
                 }),
 
@@ -75,7 +74,7 @@ fn main() {
 
                 window_min_size: Some(gpui::Size {
                     width: px(450.),
-                    height: px(200.),
+                    height: px(400.),
                 }),
                 kind: WindowKind::Normal,
                 ..Default::default()

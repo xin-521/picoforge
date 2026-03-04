@@ -8,7 +8,6 @@ pub enum ActiveView {
     Passkeys,
     Configuration,
     Security,
-    Logs,
     About,
 }
 
@@ -35,6 +34,7 @@ impl GlobalDeviceState {
 pub enum UsbIdentityPreset {
     Custom,
     Generic,
+    LibreKeys,
     PicoHsm,
     PicoFido,
     PicoOpenPgp,
@@ -57,6 +57,11 @@ impl UsbIdentityPreset {
         match self {
             Self::Custom => ("Custom (Manual Entry)".into(), None, None),
             Self::Generic => ("Generic (FEFF:FCFD)".into(), Some("FEFF"), Some("FCFD")),
+            Self::LibreKeys => (
+                "LibreKeys One (1D50:619B)".into(),
+                Some("1D50"),
+                Some("619B"),
+            ),
             Self::PicoHsm => (
                 "Pico Keys HSM (2E8A:10FD)".into(),
                 Some("2E8A"),
@@ -94,6 +99,7 @@ impl UsbIdentityPreset {
 
         match (vid.as_str(), pid.as_str()) {
             ("FEFF", "FCFD") => Self::Generic,
+            ("1D50", "619B") => Self::LibreKeys,
             ("2E8A", "10FD") => Self::PicoHsm,
             ("2E8A", "10FE") => Self::PicoFido,
             ("2E8A", "10FF") => Self::PicoOpenPgp,
@@ -116,6 +122,7 @@ impl UsbIdentityPreset {
         &[
             Self::Custom,
             Self::Generic,
+            Self::LibreKeys,
             Self::PicoHsm,
             Self::PicoFido,
             Self::PicoOpenPgp,
