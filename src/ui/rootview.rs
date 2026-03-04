@@ -1,6 +1,6 @@
 use crate::device::io;
 use crate::ui::components::sidebar::AppSidebar;
-use crate::ui::types::{ActiveView, GlobalDeviceState};
+use crate::ui::types::{ActiveView, DeviceConnectionState};
 use crate::ui::views::{
     about::AboutView, config::ConfigView, home::HomeView, passkeys::PasskeysEvent,
     passkeys::PasskeysView, security::SecurityView,
@@ -19,7 +19,7 @@ pub struct ApplicationRoot {
     active_view: ActiveView,
     is_sidebar_collapsed: bool,
     sidebar_toggle_hovered: bool,
-    state: GlobalDeviceState,
+    state: DeviceConnectionState,
     device_loading: bool,
     // Umm, why did my past self do this? This does not belong here.
     sidebar_width: Pixels,
@@ -34,7 +34,7 @@ impl ApplicationRoot {
             active_view: ActiveView::Home,
             is_sidebar_collapsed: false,
             sidebar_toggle_hovered: false,
-            state: GlobalDeviceState::new(),
+            state: DeviceConnectionState::new(),
             device_loading: false,
             sidebar_width: px(255.),
             config_view: None,

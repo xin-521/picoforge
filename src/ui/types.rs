@@ -12,13 +12,13 @@ pub enum ActiveView {
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub struct GlobalDeviceState {
+pub struct DeviceConnectionState {
     pub device_status: Option<FullDeviceStatus>,
     pub fido_info: Option<FidoDeviceInfo>,
     pub error: Option<String>,
 }
 
-impl GlobalDeviceState {
+impl DeviceConnectionState {
     pub fn new() -> Self {
         Self {
             device_status: None,

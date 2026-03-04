@@ -1,6 +1,6 @@
 use crate::device::types::DeviceMethod;
 use crate::ui::components::button::PFIconButton;
-use crate::ui::types::{ActiveView, GlobalDeviceState};
+use crate::ui::types::{ActiveView, DeviceConnectionState};
 use gpui::*;
 use gpui_component::{
     ActiveTheme, Icon, IconName, Side,
@@ -18,7 +18,7 @@ pub struct AppSidebar<V: 'static> {
     active_view: ActiveView,
     width: Pixels,
     collapsed: bool,
-    state: GlobalDeviceState,
+    state: DeviceConnectionState,
     on_select: SelectHandler<V>,
     on_refresh: RefreshHandler<V>,
 }
@@ -28,7 +28,7 @@ impl<V: 'static> AppSidebar<V> {
         active_view: ActiveView,
         width: Pixels,
         collapsed: bool,
-        state: GlobalDeviceState,
+        state: DeviceConnectionState,
     ) -> Self {
         Self {
             active_view,
