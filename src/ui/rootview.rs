@@ -2,7 +2,7 @@ use crate::device::io;
 use crate::ui::components::sidebar::AppSidebar;
 use crate::ui::types::{ActiveView, GlobalDeviceState};
 use crate::ui::views::{
-    about::AboutView, config::ConfigView, home::HomeView, logs::LogsView, passkeys::PasskeysEvent,
+    about::AboutView, config::ConfigView, home::HomeView, passkeys::PasskeysEvent,
     passkeys::PasskeysView, security::SecurityView,
 };
 
@@ -25,7 +25,6 @@ pub struct ApplicationRoot {
     sidebar_width: Pixels,
     config_view: Option<Entity<ConfigView>>,
     passkeys_view: Option<Entity<PasskeysView>>,
-    logs_view: Option<Entity<LogsView>>,
     focus_handle: FocusHandle,
 }
 
@@ -40,7 +39,6 @@ impl ApplicationRoot {
             sidebar_width: px(255.),
             config_view: None,
             passkeys_view: None,
-            logs_view: None,
             focus_handle: cx.focus_handle(),
         };
         this.refresh_device_status(None, cx);
@@ -75,12 +73,12 @@ impl ApplicationRoot {
                     }
                 }
 
-                if let Some(config_view) = &self.config_view {
-                    if let Some(window) = window {
-                        config_view.update(cx, |view, cx| {
-                            view.update_device_status(Some(status.clone()), window, cx);
-                        });
-                    }
+                if let Some(config_view) = &self.config_view
+                    && let Some(window) = window
+                {
+                    config_view.update(cx, |view, cx| {
+                        view.update_device_status(Some(status.clone()), window, cx);
+                    });
                 }
 
                 if let Some(passkeys_view) = &self.passkeys_view {
@@ -125,8 +123,8 @@ impl Render for ApplicationRoot {
             self.sidebar_width = target_width;
         }
 
-        let dialog_layer = Root::render_dialog_layer(window, &mut **cx);
-        let sheet_layer = Root::render_sheet_layer(window, &mut **cx);
+        let dialog_layer = Root::render_dialog_layer(window, cx);
+        let sheet_layer = Root::render_sheet_layer(window, cx);
 
         let title_bar = TitleBar::new().bg(cx.theme().title_bar).child(
             h_flex()
@@ -184,12 +182,6 @@ impl Render for ApplicationRoot {
                     view.clone().into_any_element()
                 }
                 ActiveView::Security => SecurityView::build(cx).into_any_element(),
-                ActiveView::Logs => {
-                    let view = self
-                        .logs_view
-                        .get_or_insert_with(|| cx.new(|cx| LogsView::new(window, cx)));
-                    view.clone().into_any_element()
-                }
                 ActiveView::About => AboutView::build(cx.theme()).into_any_element(),
             });
 

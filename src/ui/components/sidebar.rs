@@ -11,13 +11,16 @@ use gpui_component::{
 };
 use std::rc::Rc;
 
+type SelectHandler<V> = Option<Rc<dyn Fn(&mut V, ActiveView, &mut Window, &mut Context<V>)>>;
+type RefreshHandler<V> = Option<Rc<dyn Fn(&mut V, &mut Window, &mut Context<V>)>>;
+
 pub struct AppSidebar<V: 'static> {
     active_view: ActiveView,
     width: Pixels,
     collapsed: bool,
     state: GlobalDeviceState,
-    on_select: Option<Rc<dyn Fn(&mut V, ActiveView, &mut Window, &mut Context<V>)>>,
-    on_refresh: Option<Rc<dyn Fn(&mut V, &mut Window, &mut Context<V>)>>,
+    on_select: SelectHandler<V>,
+    on_refresh: RefreshHandler<V>,
 }
 
 impl<V: 'static> AppSidebar<V> {
@@ -150,12 +153,6 @@ impl<V: 'static> AppSidebar<V> {
                                     "Security",
                                     "icons/shield-check.svg",
                                     ActiveView::Security,
-                                ))
-                                .child(self.menu_item(
-                                    cx,
-                                    "Logs",
-                                    "icons/scroll-text.svg",
-                                    ActiveView::Logs,
                                 ))
                                 .child(self.menu_item_icon_name(
                                     cx,

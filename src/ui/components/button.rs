@@ -10,12 +10,14 @@ use gpui_component::{
     h_flex,
 };
 
+type ClickHandler = Option<Box<dyn Fn(&ClickEvent, &mut Window, &mut App) + 'static>>;
+
 /// A stateless text button wrapper
 #[derive(IntoElement)]
 pub struct PFButton {
     id: SharedString,
     text: SharedString,
-    on_click: Option<Box<dyn Fn(&ClickEvent, &mut Window, &mut App) + 'static>>,
+    on_click: ClickHandler,
     bg_color_start: Rgba,
     bg_color_hover: Rgba,
     bg_color_active: Rgba,
@@ -159,7 +161,7 @@ impl RenderOnce for PFButton {
 pub struct PFIconButton {
     icon: Icon,
     text: SharedString,
-    on_click: Option<Box<dyn Fn(&ClickEvent, &mut Window, &mut App) + 'static>>,
+    on_click: ClickHandler,
     bg_color_start: Rgba,
     bg_color_hover: Rgba,
     bg_color_active: Rgba,

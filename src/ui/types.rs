@@ -8,7 +8,6 @@ pub enum ActiveView {
     Passkeys,
     Configuration,
     Security,
-    Logs,
     About,
 }
 

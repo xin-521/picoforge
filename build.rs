@@ -1,4 +1,5 @@
 #[cfg(windows)]
+#[allow(clippy::single_component_path_imports)]
 use tauri_winres;
 
 // Configures windows application resource.( fix for app icon and launching app as admin)

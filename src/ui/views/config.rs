@@ -386,19 +386,19 @@ impl ConfigView {
         }
 
         let led_gpio_str = self.led_gpio_input.read(cx).text().to_string();
-        if let Ok(val) = led_gpio_str.parse::<u8>() {
-            if val != current_config.led_gpio {
-                changes.led_gpio = Some(val);
-            }
+        if let Ok(val) = led_gpio_str.parse::<u8>()
+            && val != current_config.led_gpio
+        {
+            changes.led_gpio = Some(val);
         }
 
         let driver_idx = self.led_driver_select.read(cx).selected_index(cx);
-        if let Some(idx) = driver_idx {
-            if let Some(driver) = LedDriverType::all().get(idx.row) {
-                let val = driver.value();
-                if Some(val) != current_config.led_driver {
-                    changes.led_driver = Some(val);
-                }
+        if let Some(idx) = driver_idx
+            && let Some(driver) = LedDriverType::all().get(idx.row)
+        {
+            let val = driver.value();
+            if Some(val) != current_config.led_driver {
+                changes.led_driver = Some(val);
             }
         }
 
@@ -408,10 +408,10 @@ impl ConfigView {
         }
 
         let touch_timeout_str = self.touch_timeout_input.read(cx).text().to_string();
-        if let Ok(val) = touch_timeout_str.parse::<u8>() {
-            if val != current_config.touch_timeout {
-                changes.touch_timeout = Some(val);
-            }
+        if let Ok(val) = touch_timeout_str.parse::<u8>()
+            && val != current_config.touch_timeout
+        {
+            changes.touch_timeout = Some(val);
         }
 
         if (self.led_dimmable != current_config.led_dimmable)
@@ -789,7 +789,7 @@ impl Render for ConfigView {
                             })),
                     ),
                 ),
-            &theme,
+            theme,
         )
         .into_any_element()
     }
