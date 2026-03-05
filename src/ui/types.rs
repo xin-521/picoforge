@@ -32,12 +32,6 @@ impl DeviceConnectionState {
     }
 }
 
-pub enum DeviceStateEvent {
-    Changed,
-}
-
-impl gpui::EventEmitter<DeviceStateEvent> for DeviceConnectionState {}
-
 #[derive(Clone, Debug, PartialEq)]
 pub struct LayoutState {
     pub active_view: ActiveView,

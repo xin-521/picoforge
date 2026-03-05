@@ -42,15 +42,25 @@ impl ApplicationRoot {
         if self.device.loading {
             return;
         }
-
         self.device.loading = true;
         self.device.error = None;
         cx.notify();
 
         match io::read_device_details() {
             Ok(status) => {
-                self.device.status = Some(status.clone());
+                let device_changed = self
+                    .device
+                    .status
+                    .as_ref()
+                    .map(|s| s.info.serial != status.info.serial)
+                    .unwrap_or(true);
+
+                self.device.status = Some(status);
                 self.device.error = None;
+
+                if device_changed {
+                    self.views.passkeys = None;
+                }
 
                 match io::get_fido_info() {
                     Ok(fido) => {
@@ -65,15 +75,9 @@ impl ApplicationRoot {
                 if let Some(config_view) = &self.views.config
                     && let Some(window) = window
                 {
+                    let device = self.device.clone();
                     config_view.update(cx, |view, cx| {
-                        view.update_device_status(Some(status.clone()), window, cx);
-                    });
-                }
-
-                if let Some(passkeys_view) = &self.views.passkeys {
-                    let fido = self.device.fido_info.clone();
-                    passkeys_view.update(cx, |view, cx| {
-                        view.update_device_status(Some(status.clone()), fido, cx);
+                        view.sync_from_device(&device, window, cx);
                     });
                 }
             }
@@ -143,14 +147,8 @@ impl Render for ApplicationRoot {
                 }
                 ActiveView::Passkeys => {
                     let view = self.views.passkeys.get_or_insert_with(|| {
-                        let view = cx.new(|cx| {
-                            PasskeysView::new(
-                                window,
-                                cx,
-                                self.device.status.clone(),
-                                self.device.fido_info.clone(),
-                            )
-                        });
+                        let root = cx.entity().downgrade();
+                        let view = cx.new(|cx| PasskeysView::new(window, cx, root));
                         cx.subscribe_in(
                             &view,
                             window,
@@ -166,10 +164,13 @@ impl Render for ApplicationRoot {
                     view.clone().into_any_element()
                 }
                 ActiveView::Configuration => {
-                    let view = self.views.config.get_or_insert_with(|| {
-                        cx.new(|cx| ConfigView::new(window, cx, self.device.status.clone()))
-                    });
-                    view.clone().into_any_element()
+                    if self.views.config.is_none() {
+                        let root = cx.entity().downgrade();
+                        let device = self.device.clone();
+                        self.views.config =
+                            Some(cx.new(|cx| ConfigView::new(window, cx, root, device)));
+                    }
+                    self.views.config.clone().unwrap().into_any_element()
                 }
                 ActiveView::Security => SecurityView::build(cx).into_any_element(),
                 ActiveView::About => AboutView::build(cx.theme()).into_any_element(),
