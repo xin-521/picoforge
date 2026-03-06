@@ -1610,7 +1610,7 @@ mod tests {
         let iv = [0u8; 16];
 
         let mut block = *GenericArray::from_slice(pin_hash_16);
-        let original = block.clone();
+        let original = block;
 
         let mut encryptor = cbc::Encryptor::<aes::Aes256>::new(
             GenericArray::from_slice(&key),

@@ -816,7 +816,7 @@ mod tests {
         if let Value::Map(cert_map) = &val {
             for (k, v) in cert_map {
                 if let (Value::Text(name), Value::Bool(enabled)) = (k, v) {
-                    let display_name = FidoCertification::from_str(&name)
+                    let display_name = FidoCertification::from_str(name)
                         .map(|c| format!("{}", c))
                         .unwrap_or_else(|| name.clone());
                     certifications.insert(display_name, *enabled);

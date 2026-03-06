@@ -37,7 +37,7 @@ impl AboutView {
                                             .text_color(theme.foreground)
                                             .child("PicoForge"),
                                     )
-                                    .child(Tag::new("v0.4.1"))
+                                    .child(Tag::new("v0.5.0"))
                                     .child(
                                         div()
                                             .text_color(theme.muted_foreground)
