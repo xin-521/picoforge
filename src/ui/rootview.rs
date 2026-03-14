@@ -5,6 +5,7 @@ use crate::ui::views::{
     about::AboutView, config::ConfigView, home::HomeView, passkeys::PasskeysEvent,
     passkeys::PasskeysView, security::SecurityView,
 };
+use crate::ui::TranslationKey;
 use gpui::prelude::*;
 use gpui::*;
 use gpui_component::Root;
@@ -202,9 +203,9 @@ impl Render for ApplicationRoot {
             "icons/chevron-left.svg"
         };
         let toggle_tooltip = if is_sidebar_collapsed {
-            "Expand"
+            crate::i18n::t(TranslationKey::Expand)
         } else {
-            "Collapse"
+            crate::i18n::t(TranslationKey::Collapse)
         };
         let toggle_btn = div()
             .id("sidebar-toggle-zone")

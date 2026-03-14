@@ -1,4 +1,5 @@
 use crate::ui::components::page_view::PageView;
+use crate::ui::TranslationKey;
 use gpui::*;
 use gpui_component::{
     ActiveTheme, Disableable, Icon, StyledExt,
@@ -53,14 +54,14 @@ impl SecurityView {
                                 div()
                                     .font_bold()
                                     .text_color(destructive_red)
-                                    .child("Feature Unstable"),
+                                    .child(crate::i18n::t(TranslationKey::FeatureUnstable)),
                             ),
                     )
                     .child(
                         div()
                             .text_sm()
                             .text_color(destructive_red)
-                            .child("This feature is currently under work and disabled for safety."),
+                            .child(crate::i18n::t(TranslationKey::FeatureDisabledWarning)),
                     ),
             )
             .child(
@@ -77,7 +78,7 @@ impl SecurityView {
                                 .text_lg()
                                 .font_bold()
                                 .text_color(fg)
-                                .child("Lock Settings"),
+                                .child(crate::i18n::t(TranslationKey::LockSettings)),
                         ),
                     )
                     // Card Content
@@ -97,11 +98,11 @@ impl SecurityView {
                                                 div()
                                                     .text_sm()
                                                     .font_medium()
-                                                    .child("Enable Secure Boot"),
+                                                    .child(crate::i18n::t(TranslationKey::EnableSecureBootLabel)),
                                             )
                                             .child(
                                                 div().text_xs().text_color(muted_fg).child(
-                                                    "Verifies firmware signature on startup",
+                                                    crate::i18n::t(TranslationKey::EnableSecureBootDesc),
                                                 ),
                                             ),
                                     )
@@ -120,10 +121,10 @@ impl SecurityView {
                                         v_flex()
                                             .gap_1()
                                             .child(
-                                                div().text_sm().font_medium().child("Secure Lock"),
+                                                div().text_sm().font_medium().child(crate::i18n::t(TranslationKey::SecureLockLabel)),
                                             )
                                             .child(div().text_xs().text_color(muted_fg).child(
-                                                "Prevents reading key material via debug ports",
+                                                crate::i18n::t(TranslationKey::SecureLockDesc),
                                             )),
                                     )
                                     .child(
@@ -149,7 +150,7 @@ impl SecurityView {
                                         div()
                                             .font_medium()
                                             .text_color(destructive_red)
-                                            .child("I understand the risks of bricking my device."),
+                                            .child(crate::i18n::t(TranslationKey::UnderstandRisks)),
                                     ),
                             ),
                     )
@@ -177,15 +178,15 @@ impl SecurityView {
                                             .gap_2()
                                             .items_center()
                                             .child(Icon::default().path("icons/lock.svg").size_4())
-                                            .child("Permanently Lock Device"),
+                                            .child(crate::i18n::t(TranslationKey::PermanentlyLockDevice)),
                                     ),
                             ),
                     ),
             );
 
         PageView::build(
-            "Secure Boot",
-            "Permanently lock this device to the current firmware vendor.",
+            crate::i18n::t(TranslationKey::SecurityTitle),
+            crate::i18n::t(TranslationKey::SecurityDescription),
             content,
             cx.theme(),
         )

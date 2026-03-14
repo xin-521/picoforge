@@ -1,6 +1,7 @@
 use crate::device::types::DeviceMethod;
 use crate::ui::components::{card::Card, page_view::PageView, tag::Tag};
 use crate::ui::types::DeviceConnectionState;
+use crate::ui::TranslationKey;
 use gpui::prelude::FluentBuilder;
 use gpui::*;
 use gpui_component::StyledExt;
@@ -19,8 +20,8 @@ impl HomeView {
         let columns = if is_wide { 2 } else { 1 };
 
         PageView::build(
-            "Device Overview",
-            "Quick view of your device status and specifications.",
+            crate::i18n::t(TranslationKey::HomeTitle),
+            crate::i18n::t(TranslationKey::HomeDescription),
             if !connected {
                 // No Device Status Placeholder
                 div()
@@ -34,7 +35,7 @@ impl HomeView {
                     .child(
                         div()
                             .text_color(theme.muted_foreground)
-                            .child("No Device Connected"),
+                            .child(crate::i18n::t(TranslationKey::NoDeviceConnected)),
                     )
                     .into_any_element()
             } else {
@@ -88,7 +89,7 @@ impl HomeView {
         let config = &status.config;
 
         Card::new()
-            .title("Device Information")
+            .title(crate::i18n::t(TranslationKey::DeviceInformation))
             .icon(Icon::default().path("icons/cpu.svg"))
             .child(
                 v_flex()
@@ -99,25 +100,25 @@ impl HomeView {
                             .grid_cols(2)
                             .gap_4()
                             .child(Self::render_kv(
-                                "Serial Number",
+                                crate::i18n::t(TranslationKey::SerialNumber),
                                 info.serial.clone(),
                                 theme,
                                 true,
                             ))
                             .child(Self::render_kv(
-                                "Firmware Version",
+                                crate::i18n::t(TranslationKey::FirmwareVersion),
                                 format!("v{}", info.firmware_version),
                                 theme,
                                 true,
                             ))
                             .child(Self::render_kv(
-                                "VID:PID",
+                                crate::i18n::t(TranslationKey::VidPid),
                                 format!("{}:{}", config.vid, config.pid),
                                 theme,
                                 true,
                             ))
                             .child(Self::render_kv(
-                                "Product Name",
+                                crate::i18n::t(TranslationKey::ProductName),
                                 config.product_name.clone(),
                                 theme,
                                 false,
@@ -134,7 +135,7 @@ impl HomeView {
                                     .child(
                                         div()
                                             .text_color(theme.muted_foreground)
-                                            .child("Flash Memory"),
+                                            .child(crate::i18n::t(TranslationKey::FlashMemory)),
                                     )
                                     .child(div().text_color(theme.foreground).child(
                                         if let (Some(used), Some(total)) =
@@ -142,7 +143,7 @@ impl HomeView {
                                         {
                                             format!("{:.0} / {:.0} KB", used, total)
                                         } else {
-                                            "Not Available".to_string()
+                                            crate::i18n::t(TranslationKey::NotAvailable).to_string()
                                         },
                                     )),
                             )
@@ -161,7 +162,7 @@ impl HomeView {
 
     fn render_fido_info(state: &DeviceConnectionState, theme: &Theme) -> impl IntoElement {
         Card::new()
-            .title("FIDO2 Information")
+            .title(crate::i18n::t(TranslationKey::Fido2Information))
             .icon(Icon::default().path("icons/shield.svg"))
             .child(if let Some(fido) = &state.fido_info {
                 v_flex()
@@ -174,7 +175,7 @@ impl HomeView {
                             .items_center()
                             .flex_wrap()
                             .gap_1()
-                            .child(div().text_color(theme.muted_foreground).child("AAGUID"))
+                            .child(div().text_color(theme.muted_foreground).child(crate::i18n::t(TranslationKey::Aaguid)))
                             .child(
                                 div()
                                     .font_family("Mono")
@@ -192,11 +193,11 @@ impl HomeView {
                             .child(
                                 div()
                                     .text_color(theme.muted_foreground)
-                                    .child("FIDO Versions"),
+                                    .child(crate::i18n::t(TranslationKey::FidoVersions)),
                             )
                             .child(div().text_color(theme.foreground).child(
                                 if fido.versions.is_empty() {
-                                    "N/A".to_string()
+                                    crate::i18n::t(TranslationKey::NotAvailable).to_string()
                                 } else {
                                     fido.versions.join(" · ")
                                 },
@@ -208,11 +209,15 @@ impl HomeView {
                         h_flex()
                             .justify_between()
                             .items_center()
-                            .child(div().text_color(theme.muted_foreground).child("PIN Set"))
+                            .child(div().text_color(theme.muted_foreground).child(crate::i18n::t(TranslationKey::PinSetLabel)))
                             .child({
                                 let pin_set =
                                     fido.options.get("clientPin").copied().unwrap_or(false);
-                                Tag::new(if pin_set { "Set" } else { "Not Set" }).active(pin_set)
+                                Tag::new(if pin_set { 
+                                    crate::i18n::t(TranslationKey::Set) 
+                                } else { 
+                                    crate::i18n::t(TranslationKey::NotSet) 
+                                }).active(pin_set)
                             }),
                     )
                     // Resident Keys
@@ -223,11 +228,15 @@ impl HomeView {
                             .child(
                                 div()
                                     .text_color(theme.muted_foreground)
-                                    .child("Resident Keys"),
+                                    .child(crate::i18n::t(TranslationKey::ResidentKeys)),
                             )
                             .child({
                                 let rk = fido.options.get("rk").copied().unwrap_or(false);
-                                Tag::new(if rk { "Supported" } else { "Not Supported" }).active(rk)
+                                Tag::new(if rk { 
+                                    crate::i18n::t(TranslationKey::Supported) 
+                                } else { 
+                                    crate::i18n::t(TranslationKey::NotSupported) 
+                                }).active(rk)
                             }),
                     )
                     // Min PIN Length
@@ -238,7 +247,7 @@ impl HomeView {
                             .child(
                                 div()
                                     .text_color(theme.muted_foreground)
-                                    .child("Min PIN Length"),
+                                    .child(crate::i18n::t(TranslationKey::MinPinLength)),
                             )
                             .child(
                                 div()
@@ -256,7 +265,7 @@ impl HomeView {
                                 .child(
                                     div()
                                         .text_color(theme.muted_foreground)
-                                        .child("Remaining Credentials"),
+                                        .child(crate::i18n::t(TranslationKey::RemainingCredentials)),
                                 )
                                 .child(
                                     div().font_medium().text_color(theme.foreground).child(
@@ -281,7 +290,7 @@ impl HomeView {
         let status = state.status.as_ref().unwrap();
         let config = &status.config;
         Card::new()
-            .title("LED Configuration")
+            .title(crate::i18n::t(TranslationKey::LedConfiguration))
             .icon(Icon::default().path("icons/microchip.svg"))
             .child(if status.method == DeviceMethod::Fido {
                 v_flex()
@@ -298,7 +307,7 @@ impl HomeView {
                         div()
                             .text_sm()
                             .text_color(theme.muted_foreground)
-                            .child("Information is not available in Fido only communication mode."),
+                            .child(crate::i18n::t(TranslationKey::FidoModeNotice)),
                     )
                     .into_any_element()
             } else {
@@ -311,7 +320,7 @@ impl HomeView {
                             .child(
                                 div()
                                     .text_color(theme.muted_foreground)
-                                    .child("LED GPIO Pin"),
+                                    .child(crate::i18n::t(TranslationKey::LedGpioPin)),
                             )
                             .child(format!("GPIO {}", config.led_gpio)),
                     )
@@ -321,7 +330,7 @@ impl HomeView {
                             .child(
                                 div()
                                     .text_color(theme.muted_foreground)
-                                    .child("LED Brightness"),
+                                    .child(crate::i18n::t(TranslationKey::LedBrightness)),
                             )
                             .child(config.led_brightness.to_string()),
                     )
@@ -331,7 +340,7 @@ impl HomeView {
                             .child(
                                 div()
                                     .text_color(theme.muted_foreground)
-                                    .child("Presence Touch Timeout"),
+                                    .child(crate::i18n::t(TranslationKey::PresenceTouchTimeout)),
                             )
                             .child(format!("{}s", config.touch_timeout)),
                     )
@@ -341,10 +350,14 @@ impl HomeView {
                             .child(
                                 div()
                                     .text_color(theme.muted_foreground)
-                                    .child("LED Dimmable"),
+                                    .child(crate::i18n::t(TranslationKey::LedDimmable)),
                             )
                             .child(
-                                Tag::new(if config.led_dimmable { "Yes" } else { "No" })
+                                Tag::new(if config.led_dimmable { 
+                                    crate::i18n::t(TranslationKey::Yes) 
+                                } else { 
+                                    crate::i18n::t(TranslationKey::No) 
+                                })
                                     .active(config.led_dimmable),
                             ),
                     )
@@ -354,10 +367,14 @@ impl HomeView {
                             .child(
                                 div()
                                     .text_color(theme.muted_foreground)
-                                    .child("LED Steady Mode"),
+                                    .child(crate::i18n::t(TranslationKey::LedSteadyMode)),
                             )
                             .child(
-                                Tag::new(if config.led_steady { "On" } else { "Off" })
+                                Tag::new(if config.led_steady { 
+                                    crate::i18n::t(TranslationKey::On) 
+                                } else { 
+                                    crate::i18n::t(TranslationKey::Off) 
+                                })
                                     .active(config.led_steady),
                             ),
                     )
@@ -368,7 +385,7 @@ impl HomeView {
     fn render_security_status(state: &DeviceConnectionState, theme: &Theme) -> impl IntoElement {
         let status = state.status.as_ref().unwrap();
         Card::new()
-            .title("Security Status")
+            .title(crate::i18n::t(TranslationKey::SecurityStatus))
             .icon(Icon::default().path("icons/shield-check.svg"))
             .child(
                 v_flex()
@@ -378,7 +395,7 @@ impl HomeView {
                         h_flex()
                             .justify_between()
                             .items_center()
-                            .child(div().text_color(theme.muted_foreground).child("Boot Mode"))
+                            .child(div().text_color(theme.muted_foreground).child(crate::i18n::t(TranslationKey::BootMode)))
                             .child(
                                 h_flex()
                                     .gap_2()
@@ -396,9 +413,9 @@ impl HomeView {
                                     })
                                     .child(
                                         Tag::new(if status.secure_boot {
-                                            "Secure Boot"
+                                            crate::i18n::t(TranslationKey::SecureBoot)
                                         } else {
-                                            "Development"
+                                            crate::i18n::t(TranslationKey::Development)
                                         })
                                         .active(status.secure_boot),
                                     ),
@@ -411,13 +428,13 @@ impl HomeView {
                             .child(
                                 div()
                                     .text_color(theme.muted_foreground)
-                                    .child("Debug Interface"),
+                                    .child(crate::i18n::t(TranslationKey::DebugInterface)),
                             )
                             .child(div().font_medium().text_color(theme.foreground).child(
                                 if status.secure_lock {
-                                    "Read-out Locked"
+                                    crate::i18n::t(TranslationKey::ReadoutLocked)
                                 } else {
-                                    "Debug Enabled"
+                                    crate::i18n::t(TranslationKey::DebugEnabled)
                                 },
                             )),
                     )
@@ -428,13 +445,13 @@ impl HomeView {
                             .child(
                                 div()
                                     .text_color(theme.muted_foreground)
-                                    .child("Secure Lock"),
+                                    .child(crate::i18n::t(TranslationKey::SecureLock)),
                             )
                             .child(
                                 Tag::new(if status.secure_lock {
-                                    "Acknowledged"
+                                    crate::i18n::t(TranslationKey::Acknowledged)
                                 } else {
-                                    "Pending"
+                                    crate::i18n::t(TranslationKey::Pending)
                                 })
                                 .active(status.secure_lock),
                             ),

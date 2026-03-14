@@ -1,5 +1,6 @@
 // src/views/about.rs
 use crate::ui::components::{card::Card, page_view::PageView, tag::Tag};
+use crate::ui::TranslationKey;
 use gpui::*;
 use gpui_component::{Icon, StyledExt, Theme, button::Button, h_flex, v_flex};
 
@@ -8,8 +9,8 @@ pub struct AboutView;
 impl AboutView {
     pub fn build(theme: &Theme) -> impl IntoElement {
         PageView::build(
-            "About",
-            "Information about the application and its development.",
+            crate::i18n::t(TranslationKey::AboutTitle),
+            crate::i18n::t(TranslationKey::AboutDescription),
             div()
                 .w_full()
                 .flex()
@@ -35,7 +36,7 @@ impl AboutView {
                                             .text_2xl()
                                             .font_bold()
                                             .text_color(theme.foreground)
-                                            .child("PicoForge"),
+                                            .child(crate::i18n::t(TranslationKey::AppName)),
                                     )
                                     .child(Tag::new("v0.5.0"))
                                     .child(
@@ -43,7 +44,7 @@ impl AboutView {
                                             .text_color(theme.muted_foreground)
                                             .max_w(px(450.0))
                                             .child(
-                                                "An open source commissioning tool for Pico FIDO security keys. Developed with Rust and GPUI.",
+                                                crate::i18n::t(TranslationKey::AboutTagline),
                                             ),
                                     )
                                     .child(
@@ -61,7 +62,7 @@ impl AboutView {
                                                 h_flex()
                                                     .justify_between()
                                                     .items_start()
-                                                    .child("Code By:")
+                                                    .child(crate::i18n::t(TranslationKey::CodeBy))
                                                     .child(
                                                         v_flex()
                                                             .font_medium()
@@ -78,7 +79,7 @@ impl AboutView {
                                                     .items_center()
                                                     .pt_2()
                                                     .mt_2()
-                                                    .child(h_flex().items_center().gap_1().child("Copyright:"))
+                                                    .child(h_flex().items_center().gap_1().child(crate::i18n::t(TranslationKey::Copyright)))
                                                     .child(
                                                         div()
                                                             .font_medium()

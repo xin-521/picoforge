@@ -9,6 +9,7 @@ use crate::ui::components::{
 };
 use crate::ui::rootview::ApplicationRoot;
 use crate::ui::types::DeviceConnectionState;
+use crate::ui::TranslationKey;
 use gpui::*;
 use gpui_component::button::{Button, ButtonVariant, ButtonVariants};
 use gpui_component::{
@@ -180,9 +181,9 @@ impl PasskeysView {
         let view_handle = cx.entity().downgrade();
 
         dialog::open_pin_prompt(
-            "Unlock Storage",
-            "Enter your device PIN to view saved passkeys",
-            "Unlock",
+            crate::i18n::t(TranslationKey::UnlockStorage),
+            crate::i18n::t(TranslationKey::EnterPinToView),
+            crate::i18n::t(TranslationKey::Unlock),
             window,
             cx,
             move |pin, dialog_handle, cx| {
@@ -206,9 +207,9 @@ impl PasskeysView {
         let view_handle = cx.entity().downgrade();
 
         dialog::open_confirm(
-            "Delete Passkey",
-            format!("Are you sure you want to delete the passkey for {}?", name),
-            "Delete",
+            crate::i18n::t(TranslationKey::DeletePasskey),
+            crate::i18n::t_with_args(TranslationKey::DeleteConfirmMsg, &[&name]),
+            crate::i18n::t(TranslationKey::ActionDelete),
             ButtonVariant::Danger,
             window,
             cx,
@@ -387,7 +388,7 @@ impl PasskeysView {
             dialog
                 .title("Update Minimum PIN Length")
                 .child(
-                    "Set the minimum allowed PIN length (4-63 characters) and enter a new PIN that meets this requirement.",
+                    crate::i18n::t(TranslationKey::SetMinPinLengthDesc),
                 )
                 .child(
                     v_flex()
@@ -399,15 +400,15 @@ impl PasskeysView {
                                 .child(label_view.clone())
                                 .child(Slider::new(&slider_handle))
                         )
-                        .child("Current PIN")
+                        .child(crate::i18n::t(TranslationKey::CurrentPin))
                         .child(Input::new(&current))
                         .child(
                              v_flex()
                                  .gap_2()
-                                 .child(format!("New PIN (min {} chars)", current_min))
+                                 .child(crate::i18n::t_with_args(TranslationKey::NewPinMinChars, &[&current_min.to_string()]))
                                  .child(Input::new(&new))
                         )
-                        .child("Confirm New PIN")
+                        .child(crate::i18n::t(TranslationKey::ConfirmNewPin))
                         .child(Input::new(&confirm)),
                 )
                 // on_ok is triggered by the Enter key (dialog binds Enter → Confirm action → on_ok).
@@ -420,11 +421,11 @@ impl PasskeysView {
                     let s = submit_for_btn.clone();
                     vec![
                         Button::new("cancel")
-                            .label("Cancel")
+                            .label(crate::i18n::t(TranslationKey::ActionCancel))
                             .on_click(|_, window, cx| window.close_dialog(cx)),
                         Button::new("update")
                             .primary()
-                            .label("Update")
+                            .label(crate::i18n::t(TranslationKey::ActionUpdate))
                             .on_click(move |_, window, cx| {
                                 s(window, cx);
                             }),
@@ -650,14 +651,14 @@ impl PasskeysView {
                             .text_sm()
                             .text_color(theme.muted_foreground)
                             .child(if pin_set {
-                                "PIN is set"
+                                crate::i18n::t(TranslationKey::PinIsSet)
                             } else {
-                                "No PIN configured"
+                                crate::i18n::t(TranslationKey::NoPinConfigured)
                             }),
                     ),
             )
             .child(
-                PFButton::new(if pin_set { "Change PIN" } else { "Set up PIN" })
+                PFButton::new(if pin_set { crate::i18n::t(TranslationKey::ChangePin) } else { crate::i18n::t(TranslationKey::SetupPin) })
                     .id("change-pin-btn")
                     .with_colors(rgb(0x222225), rgb(0x2a2a2d), rgb(0x333336))
                     .on_click(listener),
@@ -687,16 +688,16 @@ impl PasskeysView {
             .rounded_lg()
             .child(
                 v_flex()
-                    .child(div().font_medium().child("Minimum PIN Length"))
+                    .child(div().font_medium().child(crate::i18n::t(TranslationKey::PinMinLength)))
                     .child(
                         div()
                             .text_sm()
                             .text_color(theme.muted_foreground)
-                            .child(format!("Current: {} characters", min_len)),
+                            .child(crate::i18n::t_with_args(TranslationKey::CurrentMinLength, &[&min_len.to_string()])),
                     ),
             )
             .child(
-                PFButton::new("Update Minimum Length")
+                PFButton::new(crate::i18n::t(TranslationKey::UpdateMinPinLength))
                     .id("update-min-len-btn")
                     .with_colors(rgb(0x222225), rgb(0x2a2a2d), rgb(0x333336))
                     .disabled(!pin_set)
@@ -742,18 +743,18 @@ impl PasskeysView {
                         div()
                             .text_lg()
                             .font_semibold()
-                            .child("Authentication Required"),
+                            .child(crate::i18n::t(TranslationKey::AuthRequired)),
                     )
                     .child(
                         div()
                             .text_color(theme.muted_foreground)
                             .text_sm()
-                            .child("Unlock your device to view and manage passkeys."),
+                            .child(crate::i18n::t(TranslationKey::UnlockToViewPasskeys)),
                     )
                     .child(
                         PFIconButton::new(
                             Icon::default().path("icons/lock-open.svg"),
-                            "Unlock Storage",
+                            crate::i18n::t(TranslationKey::UnlockStorage),
                         )
                         .on_click(listener)
                         .with_colors(rgb(0xe4e4e7), rgb(0xd0d0d3), rgb(0xe4e4e7))
@@ -776,9 +777,9 @@ impl PasskeysView {
         let theme = cx.theme();
 
         Card::new()
-            .title("Stored Passkeys")
+            .title(crate::i18n::t(TranslationKey::StoredPasskeys))
             .icon(Icon::default().path("icons/key-round.svg"))
-            .description("View and manage your resident credentials")
+            .description(crate::i18n::t(TranslationKey::ManageCredentialsDesc))
             .child(
                 v_flex()
                     .gap_6()
@@ -801,7 +802,7 @@ impl PasskeysView {
                                                             .path("icons/lock-open.svg")
                                                             .size_3p5(),
                                                     )
-                                                    .child("Unlocked"),
+                                                    .child(crate::i18n::t(TranslationKey::Unlocked)),
                                             )
                                             .color(gpui::green()),
                                     )
@@ -810,13 +811,13 @@ impl PasskeysView {
                                         div()
                                             .text_sm()
                                             .text_color(theme.muted_foreground)
-                                            .child(format!("{} credentials stored", creds_len)),
+                                            .child(crate::i18n::t_with_args(TranslationKey::CredentialsStored, &[&creds_len.to_string()])),
                                     ),
                             )
                             .child(
                                 PFIconButton::new(
                                     Icon::default().path("icons/lock.svg").size_3p5(),
-                                    "Lock Storage",
+                                    crate::i18n::t(TranslationKey::LockStorage),
                                 )
                                 .small()
                                 .on_click(lock_listener),
@@ -1136,8 +1137,8 @@ impl Render for PasskeysView {
         if !device_connected {
             let theme = cx.theme();
             return PageView::build(
-                "Passkeys",
-                "Manage your security PIN and the FIDO credentials (passkeys) stored on your device.",
+                crate::i18n::t(TranslationKey::PasskeysTitle),
+                crate::i18n::t(TranslationKey::PasskeysDescription),
                 self.render_no_device(theme).into_any_element(),
                 theme,
             )
@@ -1154,8 +1155,8 @@ impl Render for PasskeysView {
         if !has_fido {
             let theme = cx.theme();
             return PageView::build(
-                "Passkeys",
-                "Manage your security PIN and the FIDO credentials (passkeys) stored on your device.",
+                crate::i18n::t(TranslationKey::PasskeysTitle),
+                crate::i18n::t(TranslationKey::PasskeysDescription),
                 self.render_not_supported(theme).into_any_element(),
                 theme,
             )
@@ -1173,8 +1174,8 @@ impl Render for PasskeysView {
             .size_full()
             .relative()
             .child(PageView::build(
-                "Passkeys",
-                "Manage your security PIN and the FIDO credentials (passkeys) stored on your device.",
+                crate::i18n::t(TranslationKey::PasskeysTitle),
+                crate::i18n::t(TranslationKey::PasskeysDescription),
                 content.into_any_element(),
                 theme,
             ))

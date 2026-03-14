@@ -1,6 +1,7 @@
 use crate::device::types::DeviceMethod;
 use crate::ui::components::button::PFIconButton;
 use crate::ui::types::{ActiveView, DeviceConnectionState};
+use crate::ui::TranslationKey;
 use gpui::*;
 use gpui_component::{
     ActiveTheme, Icon, IconName, Side,
@@ -110,7 +111,7 @@ impl<V: 'static> AppSidebar<V> {
                             div()
                                 .ml_2()
                                 .opacity(text_opacity)
-                                .child("PicoForge")
+                                .child(crate::i18n::t(TranslationKey::AppName))
                                 .font_weight(gpui::FontWeight::EXTRA_BOLD)
                                 .text_color(sidebar_fg),
                         )
@@ -132,31 +133,31 @@ impl<V: 'static> AppSidebar<V> {
                             SidebarMenu::new()
                                 .child(self.menu_item(
                                     cx,
-                                    "Home",
+                                    crate::i18n::t(TranslationKey::MenuHome),
                                     "icons/house.svg",
                                     ActiveView::Home,
                                 ))
                                 .child(self.menu_item(
                                     cx,
-                                    "Passkeys",
+                                    crate::i18n::t(TranslationKey::MenuPasskeys),
                                     "icons/key-round.svg",
                                     ActiveView::Passkeys,
                                 ))
                                 .child(self.menu_item(
                                     cx,
-                                    "Configuration",
+                                    crate::i18n::t(TranslationKey::MenuConfiguration),
                                     "icons/settings.svg",
                                     ActiveView::Configuration,
                                 ))
                                 .child(self.menu_item(
                                     cx,
-                                    "Security",
+                                    crate::i18n::t(TranslationKey::MenuSecurity),
                                     "icons/shield-check.svg",
                                     ActiveView::Security,
                                 ))
                                 .child(self.menu_item_icon_name(
                                     cx,
-                                    "About",
+                                    crate::i18n::t(TranslationKey::MenuAbout),
                                     IconName::Info,
                                     ActiveView::About,
                                 )),
@@ -216,20 +217,20 @@ impl<V: 'static> AppSidebar<V> {
                                             .text_size(px(12.))
                                             .font_weight(gpui::FontWeight::MEDIUM)
                                             .text_color(muted_foreground)
-                                            .child("Device Status"),
+                                            .child(crate::i18n::t(TranslationKey::DeviceStatus)),
                                     )
                                     .child({
                                         let (text, color_bg, color_text) =
                                             if let Some(status) = &state.status {
                                                 if status.method == DeviceMethod::Fido {
-                                                    ("Online - Fido", rgb(0xf59e0b), rgb(0xffffff))
+                                                    (crate::i18n::t(TranslationKey::StatusOnlineFido), rgb(0xf59e0b), rgb(0xffffff))
                                                 } else {
-                                                    ("Online", rgb(0x16a34a), rgb(0xffffff))
+                                                    (crate::i18n::t(TranslationKey::StatusOnline), rgb(0x16a34a), rgb(0xffffff))
                                                 }
                                             } else if state.error.is_some() {
-                                                ("Error", rgb(0xd97706), rgb(0xffffff))
+                                                (crate::i18n::t(TranslationKey::StatusError), rgb(0xd97706), rgb(0xffffff))
                                             } else {
-                                                ("Offline", rgb(0xef4444), rgb(0xffffff))
+                                                (crate::i18n::t(TranslationKey::StatusOffline), rgb(0xef4444), rgb(0xffffff))
                                             };
 
                                         div()
@@ -251,7 +252,7 @@ impl<V: 'static> AppSidebar<V> {
                             .child(
                                 PFIconButton::new(
                                     Icon::default().path("icons/refresh-cw.svg"),
-                                    "Refresh",
+                                    crate::i18n::t(TranslationKey::Refresh),
                                 )
                                 .on_click(cx.listener(
                                     move |this, _, window, cx| {

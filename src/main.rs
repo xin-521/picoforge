@@ -10,11 +10,16 @@ use ui::rootview::ApplicationRoot;
 
 mod device;
 pub mod error;
+pub mod i18n;
 pub mod logging;
 mod ui;
 
 fn main() {
     logging::logger_init();
+    
+    // 初始化翻译系统，默认使用中文
+    i18n::Translator::init(i18n::Language::Chinese);
+    
     let app = Application::new().with_assets(ui::assets::Assets);
 
     app.run(move |cx| {

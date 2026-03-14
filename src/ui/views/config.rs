@@ -8,6 +8,7 @@ use crate::ui::components::{
 };
 use crate::ui::rootview::ApplicationRoot;
 use crate::ui::types::{DeviceConnectionState, LedDriverType, UsbIdentityPreset};
+use crate::ui::TranslationKey;
 use gpui::*;
 use gpui_component::button::{ButtonCustomVariant, ButtonVariants};
 use gpui_component::{
@@ -348,9 +349,9 @@ impl ConfigView {
         let view_handle = cx.entity().downgrade();
 
         dialog::open_pin_prompt(
-            "Authentication Required",
-            "Enter your device PIN to apply changes.",
-            "Confirm",
+            crate::i18n::t(TranslationKey::AuthRequired),
+            crate::i18n::t(TranslationKey::EnterPinToApply),
+            crate::i18n::t(TranslationKey::Confirm),
             window,
             cx,
             move |pin, dialog_handle, cx| {
@@ -469,7 +470,7 @@ impl ConfigView {
         if method == crate::device::types::DeviceMethod::Fido {
             self.open_pin_dialog(changes, window, cx);
         } else {
-            let handle = dialog::open_status_dialog("Applying Configuration", window, cx);
+            let handle = dialog::open_status_dialog(crate::i18n::t(TranslationKey::ApplyingConfig), window, cx);
             self.write_config_to_device(
                 changes,
                 method,
@@ -549,7 +550,7 @@ impl ConfigView {
             .child(
                 v_flex()
                     .gap_2()
-                    .child("Vendor Preset")
+                    .child(crate::i18n::t(TranslationKey::VendorPreset))
                     .child(Select::new(&self.vendor_select).bg(rgb(0x222225)).w_full()),
             )
             .child(
@@ -558,7 +559,7 @@ impl ConfigView {
                     .grid_cols(2)
                     .gap_4()
                     .child(
-                        v_flex().gap_2().child("Vendor ID (HEX)").child(
+                        v_flex().gap_2().child(crate::i18n::t(TranslationKey::VendorIdHex)).child(
                             Input::new(&self.vid_input)
                                 .font_family("Mono")
                                 .bg(rgb(0x222225))
@@ -566,7 +567,7 @@ impl ConfigView {
                         ),
                     )
                     .child(
-                        v_flex().gap_2().child("Product ID (HEX)").child(
+                        v_flex().gap_2().child(crate::i18n::t(TranslationKey::ProductIdHex)).child(
                             Input::new(&self.pid_input)
                                 .font_family("Mono")
                                 .bg(rgb(0x222225))
@@ -578,13 +579,13 @@ impl ConfigView {
             .child(
                 v_flex()
                     .gap_2()
-                    .child("Product Name")
+                    .child(crate::i18n::t(TranslationKey::ProductName))
                     .child(Input::new(&self.product_name_input).bg(rgb(0x222225))),
             );
 
         Card::new()
-            .title("Identity")
-            .description("USB Identification settings")
+            .title(crate::i18n::t(TranslationKey::VendorPreset))
+            .description(crate::i18n::t(TranslationKey::ConfigDescription))
             .icon(Icon::default().path("icons/tag.svg"))
             .child(content)
     }
@@ -609,11 +610,11 @@ impl ConfigView {
             .child(
                 v_flex()
                     .gap_2()
-                    .child("LED GPIO Pin")
+                    .child(crate::i18n::t(TranslationKey::LedGpio))
                     .child(Input::new(&self.led_gpio_input).bg(rgb(0x222225))),
             )
             .child(
-                v_flex().gap_2().child("LED Driver").child(
+                v_flex().gap_2().child(crate::i18n::t(TranslationKey::LedDriver)).child(
                     Select::new(&self.led_driver_select)
                         .w_full()
                         .bg(rgb(0x222225)),
@@ -621,7 +622,7 @@ impl ConfigView {
             )
             .child(div().h_px().bg(theme.border))
             .child(
-                v_flex().gap_2().child("Brightness (0-15)").child(
+                v_flex().gap_2().child(crate::i18n::t(TranslationKey::LedBrightnessLabel)).child(
                     gpui_component::h_flex()
                         .items_center()
                         .gap_4()
@@ -639,11 +640,11 @@ impl ConfigView {
                     .items_center()
                     .justify_between()
                     .child(
-                        v_flex().gap_0p5().child("LED Dimmable").child(
+                        v_flex().gap_0p5().child(crate::i18n::t(TranslationKey::LedDimmableLabel)).child(
                             div()
                                 .text_sm()
                                 .text_color(theme.muted_foreground)
-                                .child("Allow brightness adjustment"),
+                                .child(crate::i18n::t(TranslationKey::LedDimmable)),
                         ),
                     )
                     .child(
@@ -657,11 +658,11 @@ impl ConfigView {
                     .items_center()
                     .justify_between()
                     .child(
-                        v_flex().gap_0p5().child("LED Steady Mode").child(
+                        v_flex().gap_0p5().child(crate::i18n::t(TranslationKey::LedSteadyLabel)).child(
                             div()
                                 .text_sm()
                                 .text_color(theme.muted_foreground)
-                                .child("Keep LED on constantly"),
+                                .child(crate::i18n::t(TranslationKey::LedSteadyMode)),
                         ),
                     )
                     .child(
@@ -672,8 +673,8 @@ impl ConfigView {
             );
 
         Card::new()
-            .title("LED Settings")
-            .description("Adjust visual feedback behavior")
+            .title(crate::i18n::t(TranslationKey::LedSettings))
+            .description(crate::i18n::t(TranslationKey::LedConfiguration))
             .icon(Icon::default().path("icons/microchip.svg"))
             .child(content)
     }
@@ -682,13 +683,13 @@ impl ConfigView {
         let content = v_flex().gap_4().child(
             v_flex()
                 .gap_2()
-                .child("Touch Timeout (seconds)")
+                .child(crate::i18n::t(TranslationKey::TouchTimeoutLabel))
                 .child(Input::new(&self.touch_timeout_input).bg(rgb(0x222225))),
         );
 
         Card::new()
-            .title("Touch & Timing")
-            .description("Configure interaction timeouts")
+            .title(crate::i18n::t(TranslationKey::PresenceTouchTimeout))
+            .description(crate::i18n::t(TranslationKey::ConfigDescription))
             .icon(Icon::default().path("icons/settings.svg"))
             .child(content)
     }
@@ -713,11 +714,11 @@ impl ConfigView {
                     .items_center()
                     .justify_between()
                     .child(
-                        v_flex().gap_0p5().child("Power Cycle on Reset").child(
+                        v_flex().gap_0p5().child(crate::i18n::t(TranslationKey::PowerCycleLabel)).child(
                             div()
                                 .text_sm()
                                 .text_color(theme.muted_foreground)
-                                .child("Restart device on reset"),
+                                .child(crate::i18n::t(TranslationKey::PowerCycleLabel)),
                         ),
                     )
                     .child(
@@ -731,11 +732,11 @@ impl ConfigView {
                     .items_center()
                     .justify_between()
                     .child(
-                        v_flex().gap_0p5().child("Enable Secp256k1").child(
+                        v_flex().gap_0p5().child(crate::i18n::t(TranslationKey::EnableSecp256k1Label)).child(
                             div()
                                 .text_sm()
                                 .text_color(theme.muted_foreground)
-                                .child("Does not work on Android!"),
+                                .child(crate::i18n::t(TranslationKey::EnableSecp256k1Label)),
                         ),
                     )
                     .child(
@@ -746,8 +747,8 @@ impl ConfigView {
             );
 
         Card::new()
-            .title("Device Options")
-            .description("Toggle advanced features")
+            .title(crate::i18n::t(TranslationKey::ConfigTitle))
+            .description(crate::i18n::t(TranslationKey::ConfigDescription))
             .icon(Icon::default().path("icons/settings.svg"))
             .child(content)
     }
@@ -764,8 +765,8 @@ impl Render for ConfigView {
 
         if !has_device {
             return PageView::build(
-                "Configuration",
-                "Customize device settings and behavior.",
+                crate::i18n::t(TranslationKey::ConfigTitle),
+                crate::i18n::t(TranslationKey::ConfigDescription),
                 div()
                     .flex()
                     .items_center()
@@ -774,7 +775,7 @@ impl Render for ConfigView {
                     .border_1()
                     .border_color(theme.border)
                     .rounded_xl()
-                    .child(div().text_color(theme.muted_foreground).child("No Content")),
+                    .child(div().text_color(theme.muted_foreground).child(crate::i18n::t(TranslationKey::NoDeviceConnected))),
                 theme,
             )
             .into_any_element();
@@ -792,8 +793,8 @@ impl Render for ConfigView {
         let columns = if is_wide { 2 } else { 1 };
 
         PageView::build(
-            "Configuration",
-            "Customize device settings and behavior.",
+            crate::i18n::t(TranslationKey::ConfigTitle),
+            crate::i18n::t(TranslationKey::ConfigDescription),
             v_flex()
                 .gap_6()
                 .child(
@@ -810,7 +811,7 @@ impl Render for ConfigView {
                     gpui_component::h_flex().justify_end().pt_4().child(
                         Button::new("apply-changes")
                             .icon(Icon::default().path("icons/save.svg"))
-                            .child("Apply Changes")
+                            .child(crate::i18n::t(TranslationKey::ApplyChanges))
                             .disabled(self.loading)
                             .custom(
                                 ButtonCustomVariant::new(cx)
