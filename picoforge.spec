@@ -72,6 +72,13 @@ install -m 644 static/appIcons/in.suyogtandel.picoforge.svg %{buildroot}%{_datad
 %{_datadir}/icons/hicolor/scalable/apps/in.suyogtandel.picoforge.svg
 
 %changelog
+* Sat Sep 26 2026 Suyog Tandel <git@suyogtandel.in> 0.5.0-2
+- chore: sync spec to 0.5.0 [skip ci] (git@suyogtandel.in)
+- feat(i18n): 添加多语言支持并实现中文翻译 (13630210858@163.com)
+- picoforge: 0.4.1 -> 0.5.0+1 (github-actions[bot]@users.noreply.github.com)
+- fix(pkg): appstream syntax error (git@suyogtandel.in)
+- chore: update appstream for flathub (git@suyogtandel.in)
+
 * Fri Mar 06 2026 Suyog Tandel <git@suyogtandel.in> 0.5.0-1
 - chore: sync spec to 0.5.0 [skip ci] (git@suyogtandel.in)
 - chore: bump app version to 0.5.0 (git@suyogtandel.in)
